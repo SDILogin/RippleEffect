@@ -1,139 +1,42 @@
 package com.andexert.rippleeffect;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.TextView;
 
-import com.andexert.library.RippleView;
+import com.andexert.library.WaterWaveView;
 
-import java.util.ArrayList;
+public class MainActivity extends AppCompatActivity {
 
-
-public class MainActivity extends ActionBarActivity
-{
-    private final Boolean isRecyclerview = false;
-    private ArrayList<String> sourcesArrayList = new ArrayList<String>();
+    private View mMainImage;
+    private WaterWaveView mWaterWaveView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (isRecyclerview)
-            setContentView(R.layout.activity_main_recycler);
-        else
-            setContentView(R.layout.activity_main_list);
+        setContentView(R.layout.activity_main);
 
-        final RippleView rippleView = (RippleView) findViewById(R.id.rect);
-        final TextView textView = (TextView) findViewById(R.id.rect_child);
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.actionbar);
+        mMainImage = findViewById(R.id.main_image);
 
-        setSupportActionBar(toolbar);
+        mWaterWaveView = (WaterWaveView) findViewById(R.id.water_wave_view);
+        mWaterWaveView.setTargetView(mMainImage);
 
-        rippleView.setOnClickListener(new View.OnClickListener()
-        {
+        mMainImage.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v)
-            {
-                Log.e("Sample", "Click Rect !");
-            }
-        });
-        rippleView.setOnRippleCompleteListener(new RippleView.OnRippleCompleteListener() {
-            @Override
-            public void onComplete(RippleView rippleView) {
-                Log.d("Sample", "Ripple completed");
-            }
-        });
-        textView.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                Log.e("Sample", "Click rect child !");
-            }
-        });
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                    case MotionEvent.ACTION_MOVE:
+                        mWaterWaveView.createWaveAtPosition(event);
+                        break;
 
-        sourcesArrayList.add("Samsung");
-        sourcesArrayList.add("Android");
-        sourcesArrayList.add("Google");
-        sourcesArrayList.add("Asus");
-        sourcesArrayList.add("Apple");
-        sourcesArrayList.add("Samsung");
-        sourcesArrayList.add("Android");
-        sourcesArrayList.add("Google");
-        sourcesArrayList.add("Asus");
-        sourcesArrayList.add("Apple");
-        sourcesArrayList.add("Samsung");
-        sourcesArrayList.add("Android");
-        sourcesArrayList.add("Google");
-        sourcesArrayList.add("Asus");
-        sourcesArrayList.add("Apple");
-
-
-        if (isRecyclerview)
-        {
-            RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-            recyclerView.setHasFixedSize(true);
-            RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-            recyclerView.setLayoutManager(layoutManager);
-
-            CustomAdapter customAdapter = new CustomAdapter();
-            customAdapter.updateList(sourcesArrayList);
-
-            customAdapter.setOnTapListener(new OnTapListener()
-            {
-                @Override
-                public void onTapView(int position)
-                {
-                    Log.e("MainActivity", "Tap item : " + position);
+                    default:
+                        break;
                 }
-            });
-            recyclerView.setAdapter(customAdapter);
-        }
-        else
-        {
-            ListView listView = (ListView) findViewById(R.id.listview);
-            CustomListViewAdapter customListViewAdapter = new CustomListViewAdapter(this);
-            customListViewAdapter.updateList(sourcesArrayList);
-            listView.setAdapter(customListViewAdapter);
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
-            {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-                {
-                    Log.e("MainActivity", "ListView tap item : " + position);
-                }
-            });
-        }
-    }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+                return false;
+            }
+        });
     }
 }
